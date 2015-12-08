@@ -20,6 +20,14 @@ Game.prototype = {
 		this.game.physics.arcade.enable(this.player);
 		this.player.anchor.setTo(0.5, 0.5);
 
+		this.bullets = this.game.add.group();
+		this.bullets.enableBody = true;
+		this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
+
+		this.bullets.createMultiple(50, 'bullet');
+		this.bullets.setAll('checkWorldBounds', true);
+		this.bullets.setAll('outOfBoundsKill', true);
+
 		this.game.camera.follow(this.player);
 
 		this.cursors = this.game.input.keyboard.addKeys({
@@ -52,13 +60,41 @@ Game.prototype = {
 		} else if (this.cursors.right.isDown) {
 			this.player.body.velocity.x += playerSpeed;
 		}
+
+		if (this.input.activePointer.isDown) {
+			fire(this);
+		}
+
+		this.physics.arcade.collide(this.bullets, this.blockedLayer, this.killBullet, null, this);
 	},
 
 	render: function () {
 		this.game.debug.spriteInfo(this.player, 32, 32);
+	},
+
+	killBullet: function (bullet) {
+		bullet.destroy();
 	}
 
 };
+
+var nextFire = 0;
+var fireRate = 150;
+
+function fire (params) {
+	var game = params.game;
+	var player = params.player;
+	var bullets = params.bullets;
+
+	if (game.time.now > nextFire && bullets.countDead() > 0) {
+		nextFire = game.time.now + fireRate;
+
+		var bullet = bullets.getFirstDead();
+		bullet.reset(player.x + 8, player.y - 8);
+
+		game.physics.arcade.moveToPointer(bullet, 300);
+	}
+}
 
 function findObjectsByType (type, map, layer) {
 	var result = [];
@@ -66,7 +102,7 @@ function findObjectsByType (type, map, layer) {
 	map.objects[layer].forEach(function (el) {
 		if (el.type === type) {
 			el.y -= map.tileHeight;
-			result.push(el)
+			result.push(el);
 		}
 	});
 	return result;

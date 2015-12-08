@@ -13,7 +13,8 @@ var taunts = [
 	'Rabbit Hole?!?!',
 	'Linux linux linux li...',
 	'I love computers',
-	'Oh, that\'s really simple'
+	'Oh, that\'s really simple',
+	'I\'m a huge asshole'
 ];
 
 Game.prototype = {

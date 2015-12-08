@@ -83164,7 +83164,9 @@ Phaser.Physics.Arcade.TilemapCollision.prototype = {
     */
     separateTile: function (i, body, tile, overlapOnly) {
 
-        if (!body.enable)
+        if (body === null) return;
+
+        if (body && !body.enable)
         {
             return false;
         }

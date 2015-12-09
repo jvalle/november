@@ -151,10 +151,6 @@ Game.prototype = {
 
 	},
 
-	// render: function () {
-	// 	this.game.debug.spriteInfo(this.player, 32, 32);
-	// },
-
 	fire: function () {
 		if (this.game.time.now > nextFire && this.bullets.countDead() > 0) {
 			nextFire = this.game.time.now + fireRate;
@@ -183,6 +179,7 @@ Game.prototype = {
 	playerShot: function (bullet, player) {
 		player.destroy();
 		this.state.start('Boot');
+		// this.youLose();
 	},
 
 	enemyShot: function (bullet, enemy) {
@@ -195,18 +192,36 @@ Game.prototype = {
 		} else {
 			this.enemies.remove(enemy);
 			if (this.enemies.length === 0) {
-				console.log('Game Over!');
-				this.state.start('Boot');
+				this.youWin();
 			}
 		}
 		this.bullets.remove(bullet);
 	},
 
-	reload: function () {
-		if (this.ammo < 20) {
-			this.bullets.createMultiple(20, 'bullet', null, true);
-		}
-		console.log('RELOADED!', this.ammo);
+	youLose: function () {
+		var style = {
+			font: '25px Arial',
+			fill: '#ffffff',
+			align: 'center'
+		};
+		this.game.add.text(10, this.game.world.centerY, '- you lose, try harder next time -', style);
+		setTimeout(function () {
+			this.state.start('Boot');
+		}.bind(this), 5000);
+	},
+
+	youWin: function () {
+		var style = {
+			font: '18px Arial',
+			fill: '#ffffff',
+			align: 'center'
+		};
+		this.game.add.text(10, this.game.world.centerY, '- you win! now you can code in peace -', style);
+		setTimeout(this.resetGame.bind(this), 5000);
+	},
+
+	resetGame: function () {
+		this.state.start('Boot');
 	}
 
 };
